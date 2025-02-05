@@ -7,24 +7,21 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
             background-color: #f0f0f0;
-            padding: 10px;
         }
 
-        .name-inputs {
+        .top-controls {
             display: flex;
-            justify-content: center;
             align-items: stretch;
             gap: 10px;
+            padding: 10px;
             width: 100%;
-            max-width: 400px;
-            margin-bottom: 20px;
+            background-color: #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .input-fields {
@@ -55,32 +52,32 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            height: 100%;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .button-container {
+            flex: 1;
             display: flex;
             flex-direction: column;
             width: 100%;
-            max-width: 400px;
-            gap: 20px;
+            height: 100%;
+            gap: 0;
         }
 
         button {
+            flex: 1;
             font-size: 20px;
             font-weight: bold;
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 20px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             width: 100%;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .pink-button {
@@ -94,40 +91,28 @@
         }
 
         .button-icon {
-            font-size: 30px;
+            font-size: 40px;
             margin-bottom: 10px;
         }
 
-        .play-mode {
-            background-color: green;
-        }
-
-        .pause-mode {
-            background-color: yellow;
-            color: black;
-        }
-
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-
             .play-pause-button {
                 font-size: 20px;
             }
 
             button {
-                font-size: 16px;
+                font-size: 18px;
             }
 
             .button-icon {
-                font-size: 24px;
+                font-size: 30px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="name-inputs">
+    <!-- Top Controls Section -->
+    <div class="top-controls">
         <div class="input-fields">
             <input type="text" id="pinkName" placeholder="Enter pink speaker name">
             <input type="text" id="blueName" placeholder="Enter blue speaker name">
@@ -135,6 +120,7 @@
         <button id="playPauseButton" class="play-pause-button play-mode">▶️</button>
     </div>
 
+    <!-- Full-Height Buttons -->
     <div class="button-container">
         <button class="pink-button" id="pinkButton">
             <span class="button-icon" id="pinkIcon">😐</span>
@@ -175,21 +161,6 @@
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
-        function toggleTimer() {
-            if (isPaused) return;
-
-            if (!debateStarted) {
-                startTimer('pink');
-                return;
-            }
-
-            const nextSpeaker = activeTimer === 'pink' ? 'blue' : 'pink';
-            const nextSpeakerName = nextSpeaker === 'pink' ? pinkNameInput.value : blueNameInput.value;
-            const voiceGender = nextSpeaker === 'pink' ? 'female' : 'male';
-            playAudioMessage(nextSpeakerName, voiceGender);
-            startTimer(nextSpeaker);
-        }
-
         function playAudioMessage(name, voiceGender) {
             window.speechSynthesis.cancel();
 
@@ -211,6 +182,21 @@
 
                 updateButtonLabels();
             }, 1000);
+        }
+
+        function toggleTimer() {
+            if (isPaused) return;
+
+            if (!debateStarted) {
+                startTimer('pink');
+                return;
+            }
+
+            const nextSpeaker = activeTimer === 'pink' ? 'blue' : 'pink';
+            const nextSpeakerName = nextSpeaker === 'pink' ? pinkNameInput.value : blueNameInput.value;
+            const voiceGender = nextSpeaker === 'pink' ? 'female' : 'male';
+            playAudioMessage(nextSpeakerName, voiceGender);
+            startTimer(nextSpeaker);
         }
 
         function updateIcons() {
