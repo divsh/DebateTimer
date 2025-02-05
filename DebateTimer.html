@@ -15,6 +15,7 @@
             margin: 0;
             background-color: #f0f0f0;
         }
+
         .name-inputs {
             margin-bottom: 20px;
             display: flex;
@@ -22,17 +23,20 @@
             align-items: center;
             gap: 20px;
         }
+
         .input-group {
             display: flex;
             align-items: center;
             position: relative;
         }
-        .input-group input {
-            padding: 5px;
-            font-size: 16px;
-            width: 200px;
-            margin-right: 10px;
-        }
+
+            .input-group input {
+                padding: 5px;
+                font-size: 16px;
+                width: 200px;
+                margin-right: 10px;
+            }
+
         .play-pause-button {
             width: 40px;
             height: 40px;
@@ -49,12 +53,14 @@
             position: absolute;
             right: -50px;
         }
+
         .button-container {
             display: flex;
             flex-direction: column;
             width: 100%;
             height: 100%;
         }
+
         button {
             flex: 1;
             font-size: 20px;
@@ -71,18 +77,22 @@
             width: 100%;
             position: relative;
         }
+
         .pink-button {
             background-color: pink;
             color: black;
         }
+
         .blue-button {
             background-color: lightblue;
             color: black;
         }
+
         .button-icon {
             font-size: 10vw;
             margin-bottom: 10px;
         }
+
         .wave-animation {
             position: absolute;
             bottom: 10px;
@@ -90,12 +100,15 @@
             height: 20px;
             display: none;
         }
+
         .active-wave {
             display: block;
         }
+
         .play-mode {
             background-color: green;
         }
+
         .pause-mode {
             background-color: yellow;
             color: black;
@@ -106,11 +119,9 @@
     <div class="name-inputs">
         <div class="input-group">
             <input type="text" id="pinkName" placeholder="Enter pink speaker name">
-            <button id="savePink">Save</button>
         </div>
         <div class="input-group">
             <input type="text" id="blueName" placeholder="Enter blue speaker name">
-            <button id="saveBlue">Save</button>
             <button id="playPauseButton" class="play-pause-button play-mode">▶️</button>
         </div>
     </div>
@@ -144,8 +155,6 @@
         const blueLabel = document.getElementById('blueLabel');
         const pinkNameInput = document.getElementById('pinkName');
         const blueNameInput = document.getElementById('blueName');
-        const savePinkButton = document.getElementById('savePink');
-        const saveBlueButton = document.getElementById('saveBlue');
         const pinkWave = document.getElementById('pinkWave');
         const blueWave = document.getElementById('blueWave');
         const playPauseButton = document.getElementById('playPauseButton');
@@ -162,6 +171,9 @@
         }
 
         function playAudioMessage(name, voiceGender) {
+            // Cancel any currently speaking or queued utterances
+            window.speechSynthesis.cancel();
+
             const message = new SpeechSynthesisUtterance(`${name || 'You'}, speak now.`);
             const voices = window.speechSynthesis.getVoices();
             message.voice = voices.find(voice => voice.name.toLowerCase().includes(voiceGender));
@@ -185,6 +197,11 @@
         }
 
         function toggleTimer() {
+            // Do nothing if paused
+            if (isPaused) {
+                return;
+            }
+
             if (!debateStarted) {
                 startTimer('pink');
                 return;
@@ -242,18 +259,6 @@
 
         pinkNameInput.addEventListener('input', updateButtonLabels);
         blueNameInput.addEventListener('input', updateButtonLabels);
-
-        savePinkButton.addEventListener('click', () => saveData('pink'));
-        saveBlueButton.addEventListener('click', () => saveData('blue'));
-
-        async function saveData(speaker) {
-            const data = {
-                speakerName: speaker === 'pink' ? pinkNameInput.value : blueNameInput.value,
-                timer: speaker === 'pink' ? pinkTimer : blueTimer,
-                timestamp: new Date().toISOString()
-            };
-            console.log('Saving data:', data); // Replace this with a call to your API for Google Sheets or Notion.
-        }
 
         updateButtonLabels();
     </script>
