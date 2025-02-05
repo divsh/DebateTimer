@@ -15,86 +15,95 @@
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
-            padding: 10px;
         }
 
         .name-inputs {
-            width: 100%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
             margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
         }
 
         .input-group {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            width: 100%;
+            position: relative;
         }
 
             .input-group input {
-                padding: 10px;
+                padding: 5px;
                 font-size: 16px;
-                width: 100%;
-                max-width: 350px;
-                border: 1px solid #ccc;
-                border-radius: 8px;
+                width: 200px;
+                margin-right: 10px;
             }
 
         .play-pause-button {
-            width: 50px;
-            height: 50px;
-            background-color: green;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
+            width: 40px;
+            height: 40px;
             border: none;
             border-radius: 50%;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            margin-top: 10px;
+            position: absolute;
+            right: -50px;
         }
 
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
             width: 100%;
-            max-width: 400px;
+            height: 100%;
         }
 
         button {
             flex: 1;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            color: black;
+            color: white;
             border: none;
             border-radius: 12px;
-            padding: 20px;
+            margin: 10px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             width: 100%;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .pink-button {
-            background-color: #ffcccc;
+            background-color: pink;
+            color: black;
         }
 
         .blue-button {
-            background-color: #add8e6;
+            background-color: lightblue;
+            color: black;
         }
 
         .button-icon {
-            font-size: 30px;
+            font-size: 10vw;
             margin-bottom: 10px;
+        }
+
+        .wave-animation {
+            position: absolute;
+            bottom: 10px;
+            width: 80px;
+            height: 20px;
+            display: none;
+        }
+
+        .active-wave {
+            display: block;
         }
 
         .play-mode {
@@ -108,27 +117,25 @@
 
         /* Mobile-Specific Styles */
         @media (max-width: 600px) {
-            body {
-                padding: 20px;
+            .name-inputs {
+                flex-direction: column;
+                gap: 10px;
             }
 
             .input-group input {
-                font-size: 14px;
+                width: 80vw;
+                margin-right: 0;
             }
 
             .play-pause-button {
-                width: 40px;
-                height: 40px;
-                font-size: 20px;
+                position: relative;
+                right: 0;
+                margin-top: 10px;
             }
 
-            button {
-                font-size: 16px;
-                padding: 15px;
-            }
-
-            .button-icon {
-                font-size: 24px;
+            .button-container button {
+                margin: 5px;
+                font-size: 18px;
             }
         }
     </style>
@@ -146,12 +153,14 @@
 
     <div class="button-container">
         <button class="pink-button" id="pinkButton">
-            <span class="button-icon" id="pinkIcon">🗣️</span>
+            <span class="button-icon" id="pinkIcon">😐</span>
             <span id="pinkLabel">Pink Speaker</span>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Sine_wave_animated.gif" alt="wave animation" class="wave-animation" id="pinkWave">
         </button>
         <button class="blue-button" id="blueButton">
             <span class="button-icon" id="blueIcon">😐</span>
             <span id="blueLabel">Blue Speaker</span>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Sine_wave_animated.gif" alt="wave animation" class="wave-animation" id="blueWave">
         </button>
     </div>
 
@@ -171,6 +180,8 @@
         const blueLabel = document.getElementById('blueLabel');
         const pinkNameInput = document.getElementById('pinkName');
         const blueNameInput = document.getElementById('blueName');
+        const pinkWave = document.getElementById('pinkWave');
+        const blueWave = document.getElementById('blueWave');
         const playPauseButton = document.getElementById('playPauseButton');
 
         function updateButtonLabels() {
@@ -232,15 +243,21 @@
             if (!debateStarted || isPaused) {
                 pinkIcon.textContent = '😐';
                 blueIcon.textContent = '😐';
+                pinkWave.classList.remove('active-wave');
+                blueWave.classList.remove('active-wave');
                 return;
             }
 
             if (activeTimer === 'pink') {
                 pinkIcon.textContent = '🗣️';
                 blueIcon.textContent = '😐';
+                pinkWave.classList.add('active-wave');
+                blueWave.classList.remove('active-wave');
             } else if (activeTimer === 'blue') {
                 pinkIcon.textContent = '😐';
                 blueIcon.textContent = '🗣️';
+                pinkWave.classList.remove('active-wave');
+                blueWave.classList.add('active-wave');
             }
         }
 
