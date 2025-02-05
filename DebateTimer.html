@@ -52,6 +52,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            height: 100%;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
         }
 
@@ -66,7 +67,7 @@
 
         button {
             flex: 1;
-            font-size: 20px;
+            font-size: 10vw; /* Dynamic size based on the button width */
             font-weight: bold;
             color: white;
             border: none;
@@ -91,8 +92,17 @@
         }
 
         .button-icon {
-            font-size: 40px;
+            font-size: 40vw; /* Adjust this value to scale the icon dynamically */
             margin-bottom: 10px;
+        }
+
+        .play-mode {
+            background-color: green;
+        }
+
+        .pause-mode {
+            background-color: yellow;
+            color: black;
         }
 
         @media (max-width: 600px) {
@@ -101,11 +111,11 @@
             }
 
             button {
-                font-size: 18px;
+                font-size: 18vw; /* Adjust font size on smaller screens */
             }
 
             .button-icon {
-                font-size: 30px;
+                font-size: 50vw; /* Adjust icon size on smaller screens */
             }
         }
     </style>
@@ -123,7 +133,7 @@
     <!-- Full-Height Buttons -->
     <div class="button-container">
         <button class="pink-button" id="pinkButton">
-            <span class="button-icon" id="pinkIcon">😐</span>
+            <span class="button-icon" id="pinkIcon">🗣️</span>
             <span id="pinkLabel">Pink Speaker</span>
         </button>
         <button class="blue-button" id="blueButton">
