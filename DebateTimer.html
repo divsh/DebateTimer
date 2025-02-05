@@ -14,95 +14,88 @@
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
+            padding: 10px;
         }
 
         .name-inputs {
-            margin-bottom: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 20px;
+            align-items: stretch;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
         }
 
-        .input-group {
+        .input-fields {
+            flex: 3;
             display: flex;
-            align-items: center;
-            position: relative;
+            flex-direction: column;
+            gap: 10px;
         }
 
-            .input-group input {
-                padding: 5px;
+            .input-fields input {
+                padding: 10px;
                 font-size: 16px;
-                width: 200px;
-                margin-right: 10px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                width: 100%;
+                box-sizing: border-box;
             }
 
         .play-pause-button {
-            width: 40px;
-            height: 40px;
+            flex: 1;
             border: none;
-            border-radius: 50%;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-            font-size: 20px;
+            border-radius: 12px;
+            font-size: 24px;
             font-weight: bold;
-            cursor: pointer;
             color: white;
+            background-color: green;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: absolute;
-            right: -50px;
+            cursor: pointer;
+            height: 100%;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .button-container {
             display: flex;
             flex-direction: column;
             width: 100%;
-            height: 100%;
+            max-width: 400px;
+            gap: 20px;
         }
 
         button {
-            flex: 1;
             font-size: 20px;
             font-weight: bold;
             color: white;
             border: none;
             border-radius: 12px;
-            margin: 10px;
+            padding: 20px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             width: 100%;
-            position: relative;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .pink-button {
-            background-color: pink;
+            background-color: #ffcccc;
             color: black;
         }
 
         .blue-button {
-            background-color: lightblue;
+            background-color: #add8e6;
             color: black;
         }
 
         .button-icon {
-            font-size: 10vw;
+            font-size: 30px;
             margin-bottom: 10px;
-        }
-
-        .wave-animation {
-            position: absolute;
-            bottom: 10px;
-            width: 80px;
-            height: 20px;
-            display: none;
-        }
-
-        .active-wave {
-            display: block;
         }
 
         .play-mode {
@@ -113,36 +106,50 @@
             background-color: yellow;
             color: black;
         }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .play-pause-button {
+                font-size: 20px;
+            }
+
+            button {
+                font-size: 16px;
+            }
+
+            .button-icon {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="name-inputs">
-        <div class="input-group">
+        <div class="input-fields">
             <input type="text" id="pinkName" placeholder="Enter pink speaker name">
-        </div>
-        <div class="input-group">
             <input type="text" id="blueName" placeholder="Enter blue speaker name">
-            <button id="playPauseButton" class="play-pause-button play-mode">▶️</button>
         </div>
+        <button id="playPauseButton" class="play-pause-button play-mode">▶️</button>
     </div>
 
     <div class="button-container">
         <button class="pink-button" id="pinkButton">
             <span class="button-icon" id="pinkIcon">😐</span>
             <span id="pinkLabel">Pink Speaker</span>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Sine_wave_animated.gif" alt="wave animation" class="wave-animation" id="pinkWave">
         </button>
         <button class="blue-button" id="blueButton">
             <span class="button-icon" id="blueIcon">😐</span>
             <span id="blueLabel">Blue Speaker</span>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Sine_wave_animated.gif" alt="wave animation" class="wave-animation" id="blueWave">
         </button>
     </div>
 
     <script>
         let pinkTimer = 0;
         let blueTimer = 0;
-        let activeTimer = null; // No active timer initially
+        let activeTimer = null;
         let debateStarted = false;
         let intervalId = null;
         let isPaused = false;
@@ -155,8 +162,6 @@
         const blueLabel = document.getElementById('blueLabel');
         const pinkNameInput = document.getElementById('pinkName');
         const blueNameInput = document.getElementById('blueName');
-        const pinkWave = document.getElementById('pinkWave');
-        const blueWave = document.getElementById('blueWave');
         const playPauseButton = document.getElementById('playPauseButton');
 
         function updateButtonLabels() {
@@ -170,8 +175,22 @@
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
+        function toggleTimer() {
+            if (isPaused) return;
+
+            if (!debateStarted) {
+                startTimer('pink');
+                return;
+            }
+
+            const nextSpeaker = activeTimer === 'pink' ? 'blue' : 'pink';
+            const nextSpeakerName = nextSpeaker === 'pink' ? pinkNameInput.value : blueNameInput.value;
+            const voiceGender = nextSpeaker === 'pink' ? 'female' : 'male';
+            playAudioMessage(nextSpeakerName, voiceGender);
+            startTimer(nextSpeaker);
+        }
+
         function playAudioMessage(name, voiceGender) {
-            // Cancel any currently speaking or queued utterances
             window.speechSynthesis.cancel();
 
             const message = new SpeechSynthesisUtterance(`${name || 'You'}, speak now.`);
@@ -187,70 +206,26 @@
             updateIcons();
 
             intervalId = setInterval(() => {
-                if (activeTimer === 'pink') {
-                    pinkTimer++;
-                } else if (activeTimer === 'blue') {
-                    blueTimer++;
-                }
+                if (activeTimer === 'pink') pinkTimer++;
+                else if (activeTimer === 'blue') blueTimer++;
+
                 updateButtonLabels();
             }, 1000);
         }
 
-        function toggleTimer() {
-            // Do nothing if paused
-            if (isPaused) {
-                return;
-            }
-
-            if (!debateStarted) {
-                startTimer('pink');
-                return;
-            }
-
-            const nextSpeaker = activeTimer === 'pink' ? 'blue' : 'pink';
-            const nextSpeakerName = nextSpeaker === 'pink' ? pinkNameInput.value : blueNameInput.value;
-            const voiceGender = nextSpeaker === 'pink' ? 'female' : 'male';
-            playAudioMessage(nextSpeakerName, voiceGender);
-            startTimer(nextSpeaker);
-        }
-
         function updateIcons() {
-            if (!debateStarted || isPaused) {
-                pinkIcon.textContent = '😐';
-                blueIcon.textContent = '😐';
-                pinkWave.classList.remove('active-wave');
-                blueWave.classList.remove('active-wave');
-                return;
-            }
-
-            if (activeTimer === 'pink') {
-                pinkIcon.textContent = '🗣️';
-                blueIcon.textContent = '😐';
-                pinkWave.classList.add('active-wave');
-                blueWave.classList.remove('active-wave');
-            } else if (activeTimer === 'blue') {
-                pinkIcon.textContent = '😐';
-                blueIcon.textContent = '🗣️';
-                pinkWave.classList.remove('active-wave');
-                blueWave.classList.add('active-wave');
-            }
+            pinkIcon.textContent = activeTimer === 'pink' ? '🗣️' : '😐';
+            blueIcon.textContent = activeTimer === 'blue' ? '🗣️' : '😐';
         }
 
         function togglePlayPause() {
-            if (isPaused) {
-                isPaused = false;
-                playPauseButton.classList.remove('pause-mode');
-                playPauseButton.classList.add('play-mode');
-                playPauseButton.textContent = '▶️';
-                toggleTimer();
-            } else {
-                isPaused = true;
-                clearInterval(intervalId);
-                playPauseButton.classList.remove('play-mode');
-                playPauseButton.classList.add('pause-mode');
-                playPauseButton.textContent = '⏸️';
-                updateIcons();
-            }
+            isPaused = !isPaused;
+            playPauseButton.classList.toggle('play-mode', !isPaused);
+            playPauseButton.classList.toggle('pause-mode', isPaused);
+            playPauseButton.textContent = isPaused ? '⏸️' : '▶️';
+
+            if (isPaused) clearInterval(intervalId);
+            else toggleTimer();
         }
 
         pinkButton.addEventListener('click', toggleTimer);
